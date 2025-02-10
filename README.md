@@ -1,4 +1,4 @@
-# L'objectif de ce projet est de réaliser un système de tracking d'une personne dans une pièe afin d'en connaître la position.
+# L'objectif de ce projet est de réaliser un système de tracking d'une personne dans une pièce afin d'en connaître la position.
 
 1) Méthode : On va constituer une tête composée de 2 capteurs de distance à ultrason afin de connaitre la distance à droite
         de la position pointée et celle à gauche de cette position.
