@@ -10,3 +10,5 @@
               -On va utiliser 2 capteurs de distances ultrason.
               -On prendra un moteur servo asservit en position pour le contrôle de l'angle.
               -Un laser sera utilisé pour s'assurer de la position pointée.
+
+TUTO : connexion ESP32 -> PC

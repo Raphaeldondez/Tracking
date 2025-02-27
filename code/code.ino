@@ -1,6 +1,7 @@
 // On définit l'angle 0 à droite
 
-#include "Servo.h"
+#include <ESP32Servo.h>
+#include "BluetoothSerial.h"
 
 #define Broche_Echo_right 12 // Broche Echo du HC-SR04 sur D7 //
 #define Broche_Trigger_right 13
@@ -8,6 +9,10 @@
 #define Broche_Trigger_left 6
 
 #define LASER 8 // Broche Trigger du HC-SR04 sur D8 //
+
+
+BluetoothSerial bt;
+
 
 // Definition des variables
 Servo servo;
@@ -19,10 +24,10 @@ int max_gap = 15;
 int step = 5;
 
 int gap;
-int Distance_right;
-int Distance_left;
-int angle; 
-
+int Distance_right=0;
+int Distance_left=0;
+int angle =0; 
+String str;
 //
 int move_right(int ang){
   ang = ang + step;
@@ -63,28 +68,34 @@ int get_distance_left(int T, int tau){
 }
 
 
+
+
+
 void setup()
 {
-  servo.attach(10);
+  /*servo.attach(10);
   pinMode(Broche_Trigger_right, OUTPUT); // Broche Trigger en sortie //
   pinMode(Broche_Echo_right, INPUT);
   pinMode(Broche_Trigger_left, OUTPUT); // Broche Trigger en sortie //
   pinMode(Broche_Echo_left, INPUT);
   // Broche Echo en entree //
-  Serial.begin (9600);
+  Serial.begin (115200);
+*/
+  bt.begin("Anti-Negro Tracker"); //Bluetooth device name
+  Serial.println("ESP32BT device started, now you can pair it!");
 
-  servo.write(0);
-  angle = 0;
+/*  servo.write(0);
+
 
   pinMode(LASER, OUTPUT);
   digitalWrite(LASER, HIGH);
-  delay(1000);
+  delay(1000);*/
 }
 
 
 void loop() {
 
-  Distance_right = get_distance_right(T,tau); 
+  /*Distance_right = get_distance_right(T,tau); 
   delay(100);
   Distance_left = get_distance_left(T,tau);
   gap = abs(Distance_left - Distance_right);
@@ -97,11 +108,23 @@ void loop() {
       angle = move_left(angle);
     }
   }
-
-  // Affichage dans le moniteur serie de la distance mesuree //
-  Serial.print("Distance gauche :"+String(Distance_left));
-  Serial.print("\tDistance droite :"+ String(Distance_right));
-  Serial.print("\tGap :"+ String(gap));
+*/
+  //Envoie par bluetooth
+  Serial.println("Trying to connect");
+  if (bt.available()){
+    str = bt.readString();
+    if(str!=""){
+      Serial.println(str);
+      bt.println("Distance"+String(Distance_left)+"\tAngnle"+String(angle));
+      // Affichage dans le moniteur serie de la distance mesuree 
+      Serial.print("Distance gauche :"+String(Distance_left));
+      Serial.print("\tDistance droite :"+ String(Distance_right));
+      Serial.print("\tGap :"+ String(gap));
+    }
+  }
 
   Serial.println("\n\n");
 }
+
+
+
