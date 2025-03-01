@@ -29,6 +29,8 @@ String str;
 int max_dist = 500; // Distance maximale des objets à prendre en compte en cm
 int max_gap = 5; // Ecart à partir duquel on considère deux objets différents
 int step = 5; // Amplitude des des décalages angulaires
+int max_angle_right = 180;
+int max_angle_left = 0;
 
 
 // Définition des fonctions auxilliaires
@@ -36,8 +38,8 @@ int move_right(int ang);
 int move_left(int ang);
 int get_distance_right();
 int get_distance_left();
-int adjust_pos(int Distance_left, int Distance_right, int ang);
-void transmit_data(int dist, int ang);
+int adjust_pos(int Distance_left, int Distance_right, int angle);
+void transmit_data(int dist, int angle);
 
 // Initialisation
 void setup()
@@ -80,19 +82,20 @@ void loop() {
 
 
 // Implémentation des fonctions auxilliaires
-int move_right(int ang){ //
+int move_right(int ang){ // Pivote le système vers la droite et renvoie la variable angle mise à jour
   ang = ang + step;
   servo.write(ang);
   return ang;
 }
 
-int move_left(int ang){
+int move_left(int ang){ // Pivote le système vers la gauche et renvoie la variable angle mise à jour
   ang = ang - step;
   servo.write(ang);
   return ang;
 }
 
-int get_distance_right(){
+//Mesure la distance avec le capteur droit et renvoie -1 si celle-ci est trop grande
+int get_distance_right(){   
   // Debut de la mesure avec un signal de 10 μS applique sur TRIG //
   digitalWrite(Broche_Trigger_right, LOW); // On efface l'etat logique de TRIG //
   delayMicroseconds(2);
@@ -108,6 +111,7 @@ int get_distance_right(){
   } else { return dist; }; 
 }
 
+//Mesure la distance avec le capteur gauche et renvoie -1 si celle-ci est trop grande
 int get_distance_left(){
     // Debut de la mesure avec un signal de 10 μS applique sur TRIG //
   digitalWrite(Broche_Trigger_left, LOW); // On efface l'etat logique de TRIG //
@@ -124,32 +128,34 @@ int get_distance_left(){
   } else { return dist; }; 
 }
 
-int  adjust_pos(int Distance_left, int Distance_right, int ang){
+// Ajuste la position du système en fonction des distance droite et gauche et de l'angle actuel et renvoie la variable angle mise à jour.
+// Ne réagit pas si une distance est négative ou si il doit sortir de la plage angulaire autorisée.
+int  adjust_pos(int Distance_left, int Distance_right, int angle){
   gap = abs(Distance_left - Distance_right);
   if (Distance_right <0 || Distance_left <0){
     Serial.print("Distance négative");
   }
   else{
     if (gap >max_gap){
-      if( (Distance_right > Distance_left) && angle <180){
+      if( (Distance_right > Distance_left) && angle < max_angle_right){
         angle = move_right(angle);
       }
-      if( (Distance_left > Distance_right) && angle >00){
+      if( (Distance_left > Distance_right) && angle >max_angle_left){
         angle = move_left(angle);
       }
     }
   }
-  return ang;
+  return angle;
 }
 
-
-void transmit_data(int dist, int ang){
+// Si un message est reçu en bluetooth, la distance et l'angle sont envoyées en réponse.
+void transmit_data(int dist, int angle){
   Serial.println("Trying to connect");
   if (bt.available()){
     str = bt.readString();
     if(str!=""){
       Serial.println("Data asked by user");
-      bt.println("Distance: "+String(Distance_left)+"  |  Angle: "+String(angle));
+      bt.println("Distance: "+String(dist)+"  |  Angle: "+String(angle));
 
     }
   }
