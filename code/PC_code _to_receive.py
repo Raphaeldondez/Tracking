@@ -1,3 +1,7 @@
+ python -m pip install -e git+https://github.com/pybluez/pybluez.git#egg=pybluez
+
+
+
 import bluetooth
 import socket
 import time
