@@ -10,7 +10,7 @@
 #define Broche_Trigger_right 22
 #define Broche_Echo_left 18 // Broche Echo du HC-SR04 sur D7 //
 #define Broche_Trigger_left 17
-#define PIN_SERVO 19
+#define PIN_SERVO 21
 //#define LASER 8 // Broche Trigger du HC-SR04 sur D8 //
 
 
@@ -52,7 +52,8 @@ void setup()
   
   // Initialisation moteur
   servo.attach(PIN_SERVO);
-  servo.write(angle);
+  servo.write(0);
+  
 
   // Initialisation du laser 
   /*pinMode(LASER, OUTPUT);
@@ -139,9 +140,11 @@ int  adjust_pos(int Distance_left, int Distance_right, int angle){
     if (gap >max_gap){
       if( (Distance_right > Distance_left) && angle < max_angle_right){
         angle = move_right(angle);
+        Serial.println("d");
       }
       if( (Distance_left > Distance_right) && angle >max_angle_left){
         angle = move_left(angle);
+        Serial.println("g");
       }
     }
   }
@@ -150,12 +153,13 @@ int  adjust_pos(int Distance_left, int Distance_right, int angle){
 
 // Si un message est reçu en bluetooth, la distance et l'angle sont envoyées en réponse.
 void transmit_data(int dist, int angle){
-  Serial.println("Trying to connect");
+  Serial.println("\nTrying to connect");
   if (bt.available()){
     str = bt.readString();
     if(str!=""){
       Serial.println("Data asked by user");
-      bt.println("Distance: "+String(dist)+"  |  Angle: "+String(angle));
+      //bt.println("Distance: "+String(dist)+"  |  Angle: "+String(angle));
+      bt.println(String(dist)+"|"+String(angle));
 
     }
   }
