@@ -1,6 +1,3 @@
- python -m pip install -e git+https://github.com/pybluez/pybluez.git#egg=pybluez
-
-
 
 import bluetooth
 import socket
@@ -9,18 +6,19 @@ import time
 
 
 
-
-def parse (data):
-    parsed = spl
-return parsed_data
-
-
-
 ''' On suppose qu'on reçoit sous la forme "Distance|Angle"  '''
 test = "365|78"
 
+def parse_data(data): # Cette fonction prends le message envoyé par le robot et en renvoie eux entiers : distance, angle
+    decoded_data = data.decode() # Convertie binaire -> str
+    distance, angle = decoded_data.split('|') # Isole les données de chaque côté du |
+    print (distance)
+    print(angle)
+    return int(distance), int(angle)  # Converti les sotries en entier
 
-target_name = "ESP32BT" #ID Bluetooth du robot
+
+
+target_name = "Tracking" #ID Bluetooth du robot
 target_address = None
 
 nearby_devices = bluetooth.discover_devices(lookup_names=True,lookup_class=True)  #Activation de la recherche Bluetooth 
@@ -45,9 +43,20 @@ if target_address is not None:
         text = "HI"
         s.send(bytes(text, 'UTF-8'))
         
-        data = s.recv(1024)
-        if data:
-            print(data)
+        received_data = s.recv(1024)
+        if received_data:
+            distance, angle = parse_data(received_data)
+            print("New_Distance: ", distance, " | New_Angle: ", angle)
+
+        #Ici tu peux mettre les conditions sur la distance par exemple :
+        if distance < 50 :
+            print("get out of here!!!")
+        else :
+            print("nice")
+
+        #Fin
+
+
     s.close()
 
 else:
