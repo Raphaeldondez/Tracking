@@ -4,6 +4,10 @@ import socket
 import time
 
 
+#initialisation des variables : 
+distance = 0
+angle = 0
+
 
 
 ''' On suppose qu'on reçoit sous la forme "Distance|Angle"  '''
@@ -44,7 +48,7 @@ if target_address is not None:
         s.send(bytes(text, 'UTF-8'))
         
         received_data = s.recv(1024)
-        if received_data:
+        if received_data != "" : #On vérifie si la donnée reçu est nul
             distance, angle = parse_data(received_data)
             print("New_Distance: ", distance, " | New_Angle: ", angle)
 
