@@ -22,7 +22,7 @@ def parse_data(data): # Cette fonction prends le message envoyé par le robot et
 
 
 
-target_name = "Tracking" #ID Bluetooth du robot
+target_name = "Tracker" #ID Bluetooth du robot
 target_address = None
 
 nearby_devices = bluetooth.discover_devices(lookup_names=True,lookup_class=True)  #Activation de la recherche Bluetooth 
@@ -49,8 +49,11 @@ if target_address is not None:
         
         received_data = s.recv(1024)
         if received_data != "" : #On vérifie si la donnée reçu est nul
-            distance, angle = parse_data(received_data)
-            print("New_Distance: ", distance, " | New_Angle: ", angle)
+            try : 
+                distance, angle = parse_data(received_data)
+                print("New_Distance: ", distance, " | New_Angle: ", angle)
+            except :
+                print("Data cannot be parsed")
 
         #Ici tu peux mettre les conditions sur la distance par exemple :
         if distance < 50 :
